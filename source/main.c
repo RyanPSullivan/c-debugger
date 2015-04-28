@@ -3,12 +3,11 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <sys/types.h>
-
 #include <sys/syscall.h>
 #include <sys/ptrace.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-//#include <sys/reg.h>
+#include <sys/reg.h>
 #include <sys/user.h>
 #include <unistd.h>
 #include <errno.h>
@@ -54,10 +53,9 @@ void run_debugger(pid_t child_pid)
     icounter++;
     struct user_regs_struct regs;
     ptrace(PTRACE_GETREGS, child_pid, 0, &regs);
-    unsigned instr = ptrace(PTRACE_PEEKTEXT, child_pid, regs.eip, 0);
+    unsigned instr = ptrace(PTRACE_PEEKTEXT, child_pid, regs.rip, 0);
 
-    procmsg("icounter = %u.  EIP = 0x%08x.  instr = 0x%08x\n",
-	    icounter, regs.eip, instr);
+    procmsg("icounter = %u.  RIP = 0x%08x.  instr = 0x%08x\n",icounter, regs.rip, instr);
 
     /* Make the child execute another instruction */
     if (ptrace(PTRACE_SINGLESTEP, child_pid, 0, 0) < 0) {
